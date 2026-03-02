@@ -158,9 +158,6 @@ d669c04bf6b1   postgres:16-alpine   "docker-entrypoint.s…"   1               2
 Local Volumes space usage:
 
 VOLUME NAME                  LINKS     SIZE
-crm-project_postgres_data    0         48.78MB
-crmv2-main_postgres_data     0         48.78MB
-crmv2-main_uploads           0         0B
 fastcrm-main_app_logs        1         0B
 fastcrm-main_postgres_data   1         48.76MB
 
