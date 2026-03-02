@@ -1,0 +1,51 @@
+services:
+  app:
+    build: .
+    container_name: fastcrm
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_TYPE: postgres
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-fastcrm}
+      DB_USER: ${DB_USER:-fastcrm}
+      DB_PASSWORD: ${DB_PASSWORD:-fastcrm_pass}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - app_logs:/app/logs
+    networks:
+      - fastcrm_net
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: fastcrm_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-fastcrm}
+      POSTGRES_USER: ${DB_USER:-fastcrm}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-fastcrm_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-fastcrm} -d ${DB_NAME:-fastcrm}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - fastcrm_net
+
+volumes:
+  postgres_data:
+  app_logs:
+
+networks:
+  fastcrm_net:
+    driver: bridge

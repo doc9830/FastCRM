@@ -1,0 +1,19 @@
+version: '3.9'
+
+# Лёгкий вариант — только один контейнер, данные в SQLite
+services:
+  app:
+    build: .
+    container_name: fastcrm_sqlite
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_TYPE: sqlite
+      SQLITE_PATH: /app/data/fastcrm.db
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
+    volumes:
+      - ./data:/app/data   # данные на хосте — не теряются при пересоздании контейнера
